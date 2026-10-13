@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d1017">
+<title>命运的岔路口 · 大一四年互动故事</title>
+<style>
+  :root{
+    --bg:#0d1017;
+    --bg2:#131722;
+    --card:#181e2c;
+    --card2:#1c2231;
+    --ink:#ece5d4;      /* 米白正文 */
+    --ink-dim:#9c957f;
+    --ink-faint:#6a6453;
+    --gold:#d9a441;
+    --gold-bright:#e8b95c;
+    --line:#2a3142;
+    --c-courage:#f0a35e; /* 勇气 暖橙 */
+    --c-heart:#e08a9d;   /* 情感 玫瑰 */
+    --c-study:#7fb3e8;   /* 学力 蓝 */
+    --c-kind:#8fd0a6;    /* 善意 绿 */
+    --serif:"Noto Serif SC","Songti SC","STZhongsong","STSong","SimSun",serif;
+    --sans:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:var(--bg);
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+  }
+  /* 星轨氛围背景 */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(217,164,65,0.10), transparent 60%),
+      radial-gradient(900px 500px at 100% 10%, rgba(127,179,232,0.07), transparent 60%),
+      radial-gradient(700px 700px at 50% 120%, rgba(224,138,157,0.06), transparent 60%);
+  }
+  /* 星空点 */
+  body::after{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(236,229,212,.5), transparent),
+      radial-gradient(1px 1px at 70% 60%, rgba(236,229,212,.4), transparent),
+      radial-gradient(1.5px 1.5px at 40% 80%, rgba(236,229,212,.35), transparent),
+      radial-gradient(1px 1px at 85% 20%, rgba(236,229,212,.45), transparent),
+      radial-gradient(1px 1px at 10% 70%, rgba(236,229,212,.3), transparent),
+      radial-gradient(1.5px 1.5px at 55% 10%, rgba(236,229,212,.35), transparent),
+      radial-gradient(1px 1px at 90% 85%, rgba(236,229,212,.3), transparent);
+  }
+  .wrap{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:0 18px 60px;}
+
+  /* 顶部进度 */
+  .topbar{position:sticky;top:0;z-index:5;background:rgba(13,16,23,.88);backdrop-filter:blur(6px);padding:14px 0 10px;border-bottom:1px solid var(--line);}
+  .toprow{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--ink-dim);letter-spacing:.5px;}
+  .chapno{font-family:var(--serif);color:var(--gold);}
+  .track{height:3px;background:var(--line);border-radius:2px;margin-top:10px;overflow:hidden;}
+  .fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-bright));border-radius:2px;transition:width .5s ease;width:0;}
+
+  /* 首页 */
+  .home{min-height:82vh;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:40px 8px;}
+  .home .seal{font-size:13px;letter-spacing:4px;color:var(--ink-dim);margin-bottom:18px;}
+  .home h1{font-family:var(--serif);font-size:38px;font-weight:700;letter-spacing:6px;color:var(--ink);}
+  .home h1 .gold{color:var(--gold);}
+  .home .sub{margin-top:14px;font-size:14px;color:var(--ink-dim);line-height:1.9;letter-spacing:1px;}
+  .home .rule{width:120px;height:1px;background:var(--gold);margin:26px auto;opacity:.6;}
+  .home .tips{font-size:12px;color:var(--ink-faint);letter-spacing:1px;line-height:2;}
+
+  /* 通用按钮 */
+  .btn{
+    display:inline-block;min-height:48px;padding:14px 26px;border:1px solid var(--line);
+    border-radius:10px;background:var(--card);color:var(--ink);
+    font-family:var(--sans);font-size:15px;cursor:pointer;text-align:center;
+    transition:transform .15s ease,border-color .2s ease,background .2s ease,color .2s ease;
+    -webkit-user-select:none;user-select:none;
+  }
+  .btn:hover{border-color:var(--gold);transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-bright));color:#17140c;border:none;font-weight:600;}
+  .btn-gold:hover{border:none;filter:brightness(1.05);}
+  .btn-ghost{background:transparent;color:var(--ink-dim);border-color:var(--line);}
+  .btn-ghost:hover{color:var(--ink);}
+
+  /* 章节视图 */
+  .scene{animation:fadeUp .6s ease both;}
+  .chapter{font-size:12px;letter-spacing:3px;color:var(--gold);margin-top:26px;}
+  .scene h2{font-family:var(--serif);font-size:26px;font-weight:700;margin-top:8px;letter-spacing:1px;}
+  .scene .escort{font-size:13px;color:var(--ink-dim);margin-top:8px;letter-spacing:1px;}
+  .scene .story{
+    margin-top:24px;font-size:15.5px;line-height:2.1;color:var(--ink);
+    text-align:justify;text-justify:inter-ideograph;
+  }
+  .scene .story p{margin-bottom:16px;}
+
+  .options{margin-top:28px;display:flex;flex-direction:column;gap:12px;}
+  .opt{
+    min-height:56px;padding:15px 18px;border:1px solid var(--line);border-radius:12px;
+    background:var(--card);cursor:pointer;text-align:left;color:var(--ink);
+    font-family:var(--sans);font-size:15px;transition:all .18s ease;position:relative;overflow:hidden;
+  }
+  .opt:hover{border-color:var(--gold);background:var(--card2);transform:translateY(-1px);}
+  .opt:active{transform:translateY(0);}
+  .opt .lab{font-weight:600;letter-spacing:.5px;}
+  .opt .sub{display:block;font-size:12.5px;color:var(--ink-dim);margin-top:5px;}
+  .opt.disabled{pointer-events:none;opacity:.45;}
+  .opt.chosen{border-color:var(--gold);background:var(--card2);opacity:1;}
+  .opt .tag{position:absolute;top:12px;right:14px;font-size:11px;color:var(--ink-faint);letter-spacing:1px;}
+
+  /* 选择后命运旁白 */
+  .fatebox{
+    margin-top:24px;padding:22px;border-radius:14px;
+    background:linear-gradient(135deg,rgba(217,164,65,.10),rgba(217,164,65,.02));
+    border:1px solid rgba(217,164,65,.35);
+    animation:fadeUp .5s ease both;
+  }
+  .fatebox .eyebrow{font-size:12px;letter-spacing:2px;color:var(--gold);}
+  .fatebox .line{font-family:var(--serif);font-size:16px;line-height:2;color:var(--ink);margin-top:10px;}
+  .fatebox .gain{margin-top:12px;font-size:12.5px;color:var(--ink-dim);letter-spacing:.5px;}
+  .fatebox .gain b{font-weight:600;}
+  .fatebox .next{margin-top:18px;}
+
+  /* 命运值仪表 */
+  .meter{
+    margin-top:24px;padding:18px;border-radius:14px;background:var(--card);border:1px solid var(--line);
+  }
+  .meter .mtitle{font-size:12px;letter-spacing:2px;color:var(--ink-dim);margin-bottom:14px;}
+  .met-row{display:flex;align-items:center;gap:12px;margin-bottom:11px;}
+  .met-row:last-child{margin-bottom:0;}
+  .met-name{width:44px;font-size:13px;color:var(--ink);font-weight:600;flex:none;}
+  .met-bar{flex:1;height:8px;background:var(--line);border-radius:5px;overflow:hidden;}
+  .met-fill{height:100%;width:0;border-radius:5px;transition:width .6s cubic-bezier(.4,0,.2,1);}
+  .met-num{width:22px;text-align:right;font-size:12px;color:var(--ink-dim);flex:none;}
+
+  /* 结果页 */
+  .result{animation:fadeUp .6s ease both;text-align:center;padding-top:30px;}
+  .result .badge{display:inline-block;font-size:12px;letter-spacing:3px;color:var(--gold);border:1px solid rgba(217,164,65,.4);border-radius:20px;padding:6px 16px;}
+  .result .icon{font-size:52px;margin-top:22px;color:var(--gold);}
+  .result h2{font-family:var(--serif);font-size:32px;font-weight:700;margin-top:12px;letter-spacing:2px;}
+  .result .endline{font-family:var(--serif);font-size:16px;line-height:2.1;color:var(--ink);margin:20px auto 0;max-width:520px;text-align:justify;}
+  .result .subnote{font-size:12px;color:var(--ink-faint);margin-top:16px;letter-spacing:1px;}
+
+  .res-grid{display:flex;flex-direction:column;gap:16px;margin-top:26px;}
+  .res-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:left;}
+  .res-card .rt{font-size:13px;letter-spacing:2px;color:var(--ink-dim);margin-bottom:12px;}
+  canvas{width:100%;max-width:300px;height:auto;margin:6px auto;display:block;}
+  .res-btns{display:flex;flex-direction:column;gap:12px;margin-top:26px;}
+  .share-tip{font-size:12px;color:var(--ink-faint);margin-top:16px;line-height:1.9;letter-spacing:.5px;}
+
+  .navfoot{display:flex;gap:12px;margin-top:26px;}
+  .navfoot .btn{flex:1;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .hidden{display:none !important;}
+
+  @media (max-width:480px){
+    .home h1{font-size:31px;letter-spacing:4px;}
+    .scene h2{font-size:22px;}
+    .scene .story{font-size:15px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 顶部进度条 -->
+  <div class="topbar hidden" id="topbar">
+    <div class="toprow">
+      <span class="chapno" id="chapno">第一章</span>
+      <span id="chaptotal">共十章</span>
+    </div>
+    <div class="track"><div class="fill" id="fill"></div></div>
+  </div>
+
+  <main id="view"></main>
+
+</div>
+
+<script>
+/* ============ 数据 ============ */
+var SCENES=[
+  {
+    id:1,title:"社团招新",escort:"你想成为谁",
+    text:"报到第二周的午后，校园广场人声鼎沸。几十顶帐篷支起来，“百团大战”正酣。你被人群推着走，眼前是学生会飞扬的海报、话剧社搭起的戏台、志愿者协会的山区照片墙……每个人都在喊“来我们这儿”。你握着报名表，笔尖悬在半空。",
+    options:[
+      {label:"报名学生会组织部",sub:"练人际，也练胆子",fate:{courage:1},set:{club:'stu'},
+       line:"你接过那枚小小的徽章。从此你有了一张新的名片，也开始学着在人群里开口。"},
+      {label:"报名话剧社 / 文学社",sub:"忠于喜欢的东西",fate:{heart:1},set:{club:'lit'},
+       line:"你选了那个不算热闹的角落。文字与舞台，成了你安放自己的地方。"},
+      {label:"报名志愿者协会",sub:"想去帮点什么",fate:{kind:1},set:{club:'vol'},
+       line:"照片里孩子的笑脸让你停了很久。你写下名字，远处的哭声从此和你有了关系。"},
+      {label:"什么都不想加入，转身离开",sub:"保留自己的节奏",fate:{study:1},set:{club:'none'},
+       line:"你在人群边缘站了很久，最后转身离开。有些人的大学生活从喧嚣开始，你的，从独处开始。"}
+    ]
+  },
+  {
+    id:2,title:"综测竞选",escort:"你到底要什么",
+    text:"学期末，综合测评表发下来。辅导员在班会上问：有没有人想竞选班长、学习委员？教室安静得能听见时钟。你看见讲台上那张表——加分，也加责任。身后有人轻轻推了你一把。",
+    options:[
+      {label:"主动站上竞选台",sub:"把机会握在手里",fate:{courage:1},
+       line:"你站上去，手心出汗，可话还是说完了。那一票票里，是你第一次被人“看见”。"},
+      {label:"婉拒，专注绩点",sub:"先稳住自己",fate:{study:1},
+       line:"你没有抬头。那张表被下一个人拿走了，而你低头翻开了书。"},
+      {label:"被人推着才上去",sub:"随缘而为",fate:{heart:1},
+       line:"半推半就之间，你竟也当选了。很多事原来不是想好才开始，而是开始后慢慢想好。"}
+    ]
+  },
+  {
+    id:3,title:"图书馆之遇",escort:"爱与勇气",
+    text:"第二学期，你习惯了图书馆靠窗的座位。那个位置总坐着同一个人——低着头，翻书，偶尔抬头看窗外。某天下午，你们的目光在半空撞了一下，又各自躲开。阳光落在桌沿上，你忽然不知道该看书，还是该看那个人。",
+    options:[
+      {label:"递过去一张纸条",sub:"勇敢靠近",fate:{heart:1,courage:1},set:{love_note:true},
+       line:"你把纸条推过去，心快跳出嗓子。命运，有时只是一次伸手。"},
+      {label:"先成为朋友",sub:"慢慢守护",fate:{heart:1},set:{love_note:true},
+       line:"你没有着急。有些种子，适合先埋在土里。"},
+      {label:"移开目光，继续看书",sub:"克制",fate:{study:1},set:{love_note:false},
+       line:"你收回目光，翻过一页。那一刻你选的不是那个人，是你想成为的自己。"}
+    ]
+  },
+  {
+    id:4,title:"情愫",escort:"心动了怎么办",
+    branch:function(mem){
+      var txt=mem.love_note?
+        "入夏的傍晚，晚风很轻。自从那天在图书馆，你的目光总忍不住落在靠窗的那个人身上。周末，ta约你去看一场展览。你握着手机，对话框的光一闪一闪，像在问：要不要靠近一点？" :
+        "入夏的傍晚，晚风很轻。最近，你总忍不住看向那个常和你一起走路的普通同学——ta在你身边笑过很多次。周末，ta约你去看一场展览。你握着手机，对话框的光一闪一闪，像在问：要不要靠近一点？";
+      return {text:txt, options:[
+        {label:"赴约，也把心意说出口",sub:"勇敢确认",fate:{heart:1},set:{love:true},line:"你应下了那个约。有些故事，从一句“好”开始。"},
+        {label:"赴约，但先做朋友慢慢来",sub:"慢慢靠近",fate:{heart:1},set:{love:true},line:"你去了，没有说破。有些靠近，需要时间才敢承认。"},
+        {label:"婉拒，把心思放回自己身上",sub:"克制",fate:{study:1},set:{love:false},line:"你回了句“下次吧”。心动有时候，也需要克制。"}
+      ]};
+    }
+  },
+  {
+    id:5,title:"暑期支教",escort:"远处的哭声",
+    text:"暑假将至，志愿者协会发来山区支教报名。名额只有几个，却要占掉你安排好的复习和实习。你看着招募海报上那双眼睛，又看看日历上的计划，站在两难中间。",
+    options:[
+      {label:"毫不犹豫报名",sub:"把善意放最前",fate:{kind:1},set:{volunteer:true},
+       line:"你报了名。后来那个暑假，比任何计划都更让你记得久。"},
+      {label:"犹豫后放弃",sub:"先顾好自己",fate:{study:1},set:{volunteer:false},
+       line:"你删掉了报名页面。理由很多，但你都懂——那只是不够勇敢的另一种说法。"},
+      {label:"拉上同伴一起去",sub:"分享这份善意",fate:{kind:1,heart:1},set:{volunteer:true},
+       line:"你拨通了那个人的电话。善意从来不会因为分享而变少，只会变亮。"}
+    ]
+  },
+  {
+    id:6,title:"绩点夹缝",escort:"必须取舍",
+    branch:function(mem){
+      var clash=({stu:"部门的活动一场接一场",lit:"社团的创作与排练一场接一场",vol:"志愿活动的排班一场接一场",none:"兼职与自学的时间互相打架"}[mem.club])||"社团的活动一场接一场";
+      var txt="大二。"+clash+"，期末考试却在逼近。你桌上的绩点单贴了又撕，那边的催促一条接一条。深夜十一点，你看着这两样东西，忽然很累。";
+      return {text:txt, options:[
+        {label:"减少那边的投入，死磕绩点",sub:"学业优先",fate:{study:1},line:"你退了几场。分数上去了，有些热闹却也淡了。取舍，从来都是双刃。"},
+        {label:"咬牙两肩挑，都不放弃",sub:"硬撑到底",fate:{courage:1},line:"你熬过了几个通宵，把自己耗得很薄，却也撑了过来。透支换来的，是强撑的体面。"},
+        {label:"退出来，去做真正想做的事",sub:"忠于内心",fate:{heart:1},line:"你递了退出申请。空出来的时间，你用来做点自己真正舍不得的事。"}
+      ]};
+    }
+  },
+  {
+    id:7,title:"体测意外",escort:"一场突发的意外",
+    text:"体育课体测，你拼尽全力冲线，脚下却忽然一崴，整个人摔在跑道上。膝盖一阵钝痛，血丝渗出来，周围同学的惊呼围拢过来。可体测项目还没测完，下一个项目已经点名到你。",
+    options:[
+      {label:"咬牙爬起来，坚持测完",sub:"硬扛到底",fate:{courage:1},set:{help:false},
+       line:"你扶了一把跑道，站起来，把最后一个项目跑完。膝盖上的伤，后来结成了疤。"},
+      {label:"叫住同学，让ta扶你去医务室",sub:"懂得求助",fate:{heart:1},set:{help:true},
+       line:"你喊了一声，有人朝你跑过来。原来开口求助，也是一种勇气。"},
+      {label:"自己忍痛挪到场边，等缓过来再说",sub:"独自处理",fate:{study:1},set:{help:false},
+       line:"你没惊动谁，自己坐到场边揉着伤。有些疼，你习惯先自己扛着。"}
+    ]
+  },
+  {
+    id:8,title:"跌倒",escort:"一场挫折",
+    branch:function(mem){
+      var txt=mem.help?
+        "有一件事，你认真准备了很久——一场重要的考试、一次竞选，或一个你很在意的机会。可结果下来那天，你输了。你想起那个曾在你狼狈时接过你一把的人，忽然很想找ta说说话。" :
+        "有一件事，你认真准备了很久——一场重要的考试、一次竞选，或一个你很在意的机会。可结果下来那天，你输了。名单上没有你的名字，你躲进没人的楼梯间，手机屏幕亮着，又暗下去。";
+      return {text:txt, options:[
+        {label:"允许自己难过一晚，天亮再战",sub:"重新站起",fate:{courage:1},line:"你在黑暗里坐了很久，然后站起来。真正的勇敢，是跌下去后还肯再走。"},
+        {label:"拨给能听你说话的人，把委屈说出来",sub:"找人倾诉",fate:{heart:1},line:"你把眼泪说给了愿意听的人。原来被接住的难过，才流得动。"},
+        {label:"安静地一个人消化",sub:"独自承受",fate:{study:1},line:"你没有对谁说起。有些伤口，你习惯自己捂着、慢慢结痂。"}
+      ]};
+    }
+  },
+  {
+    id:9,title:"人际裂缝",escort:"修复或放手",
+    branch:function(mem){
+      var love=mem.love;
+      var txt=love?
+        "大二下，你们之间裂开了一道口子。也许是一场误会，也许是毕业的话题让空气变冷，也许只是那天谁都没有先低头。你翻着聊天记录，停在最后一条消息上，迟迟按不下发送。" :
+        "大二下，一段重要的友情裂开了。也许是某场误会，也许是你们渐渐无话，也许只是那天谁都没有先低头。你翻着聊天记录，停在最后一条消息上，迟迟按不下发送。";
+      var optA={label:love?"主动低头，试着修复这段关系":"主动低头，试着修复这份友情",sub:"经营",fate:{heart:1},line:"你先开了口。放下姿态的那一刻，有些裂痕开始慢慢愈合。"};
+      var optB={label:"冷静告别，体面地放手",sub:"成全",fate:{courage:1},line:"你删掉了那句没说出口的话。有些关系，停在最好的时候，也是一种成全。"};
+      var optC={label:"不解释，任其远去",sub:"沉默",fate:{study:1},line:"你没有发那条消息。后来你总想，如果那天多说一句，会不会不一样。可命运，没有如果。"};
+      return {text:txt, options:[optA,optB,optC]};
+    }
+  },
+  {
+    id:10,title:"深夜失窃",escort:"一件重要的东西不见了",
+    text:"某个深夜，你推开宿舍门，发现桌上放着的重要东西不见了——也许是装了整学期资料的U盘，也许是朋友送的那件物件，也许是明天就要用的东西。宿舍里只有你，灯亮着，风把窗帘吹得鼓起来。",
+    options:[
+      {label:"冷静下来，一步步排查和上报",sub:"冷静处理",fate:{study:1},
+       line:"你没有慌，一件件排查，最后报了宿管。越是乱的时候，越要先稳住自己。"},
+      {label:"先联系室友和信任的人商量",sub:"找人商量",fate:{heart:1},
+       line:"你拨了电话，把事说给了信任的人。原来夜里最难熬的事，说出来会轻一点。"},
+      {label:"一个人连夜去找，不惊动任何人",sub:"独自奔走",fate:{courage:1},
+       line:"你披了件衣服就冲出门去，一个人走遍可能的地方。那一夜的风很冷，你却很执拗。"}
+    ]
+  },
+  {
+    id:11,title:"大三路口",escort:"考研 · 就业 · 出国",
+    text:"大三下学期，班主任找你谈话，办公室里只有你们两个人。“毕业以后，想往哪走？”他问。窗外是四月的风，你忽然意识到，四年已经走完一半多。",
+    options:[
+      {label:"全力备考研究生",sub:"继续深造",fate:{study:1},
+       line:"你把图书馆当成第二个家。那段一个人伏案的时光，后来长成了你脚下的台阶。"},
+      {label:"打磨简历，准备秋招",sub:"走向职场",fate:{courage:1},
+       line:"你开始跑宣讲会、改简历。第一次为“谋生”二字熬夜时，你终于长大了一点。"},
+      {label:"申请出国交换",sub:"去看看世界",fate:{courage:1,heart:1},
+       line:"你递了申请。远方的地图在你心里展开，世界原来比想象的大。"}
+    ]
+  },
+  {
+    id:12,title:"现实的风",escort:"恋爱与远方",
+    branch:function(mem){
+      var love=mem.love;
+      var txt=love?
+        "大四那年，风声渐紧。你和ta的路，正慢慢岔开——毕业去向不同、家里有了不一样的声音，或只是你们都在各自奔忙，越来越少话。夜深了，你望着那个熟悉的聊天框，知道有些话再不说，就来不及了。" :
+        "大四那年，风声渐紧。你终于要为自己的未来做选择——去哪个城市、走哪条路。而曾经那些关于心动与陪伴的念头，此刻也逼着你去想：你愿意为谁改变，又愿意为谁停下。（若那段心动始终只是心事，这便是一次关于未来与感情的认真抉择。）";
+      var opts=love?[
+        {label:"想办法把两个人往一起带，不轻易放手",sub:"为爱坚持",fate:{heart:1},line:"你想尽办法，想给这段关系一个“能继续”的答案。爱到深处，是愿意绕路。"},
+        {label:"尊重各自的路，体面地说再见",sub:"成全放手",fate:{courage:1},line:"你放了手，没有拖泥带水。成全有时，是松开手让对方去更远的地方。"},
+        {label:"先把前途安顿好，感情往后放",sub:"现实优先",fate:{study:1},line:"你先把行李收拾好，再谈其他。现实主义者，也有他的深情。"}
+      ]:[
+        {label:"愿意为在乎的人，把某个选择往后放一放",sub:"为情停留",fate:{heart:1},line:"你把某个机会让了出去，没后悔。有些东西，比前程更让你舍不得。"},
+        {label:"咬咬牙，先把自己送去更远的地方",sub:"只身向前",fate:{courage:1},line:"你背上行囊走了。先把自己活好，是你对命运最硬气的回答。"},
+        {label:"安顿好自己，感情的事顺其自然",sub:"随遇而安",fate:{study:1},line:"你把能握住的都握住了，其余的交给时间。现实主义者，也有他的温柔。"}
+      ];
+      return {text:txt, options:opts};
+    }
+  },
+  {
+    id:13,title:"唯一的保研名额",escort:"竞争或成全",
+    text:"大四，保研名额只有一个。你的对手，是你最好的朋友。名单贴在墙上的前一晚，你们谁都没提这件事，却谁都知道。",
+    options:[
+      {label:"全力去争",sub:"把机会握在手里",fate:{courage:1},
+       line:"你全力以赴。榜上有你名字的那天，你高兴不起来——你赢了名额，心里却空了一块。"},
+      {label:"公平竞争，不使手段",sub:"君子之争",fate:{study:1,heart:1},
+       line:"你们公平地考，谁也没让谁。无论最后谁上，你们仍然是最懂彼此的人。"},
+      {label:"主动退出，成全对方",sub:"成人之美",fate:{kind:1},
+       line:"你把表格收进了抽屉。成全朋友的那天，你第一次明白，输也是一种赢。"}
+    ]
+  },
+  {
+    id:14,title:"创业邀请",escort:"安稳或冒险",
+    text:"毕业前，学长端着一杯咖啡来找你，桌上摊着一份商业计划书。“要不要赌一把？”他问。前路茫茫，可能是一夜翻盘，也可能是血本无归。毕业的你，站在安稳与冒险的分界线上。",
+    options:[
+      {label:"押上精力去闯",sub:"赌一把",fate:{courage:2},
+       line:"你在计划书上签了字。那一刻起，命运从轨道，变成了旷野。"},
+      {label:"婉拒，按原计划走",sub:"求稳",fate:{study:1},
+       line:"你谢过学长，走上那条更稳妥的路。稳妥没什么不好，只是偶尔你会想起那份没签的字。"},
+      {label:"边实习边观望",sub:"先试探",fate:{courage:1,study:1},
+       line:"你没有立刻答应，也没有拒绝。聪明的人总想两手都抓——可命运常常只留一条路。"}
+    ]
+  }
+];var ENDINGS={
+  courage:{icon:"⇢",title:"孤勇者",sub:"勇气最高",color:"var(--c-courage)",
+    text:"你拒绝了被定义的人生，把名字写进了未知里。多年以后，当你在另一座城市醒来，仍会想起毕业那天抛起的学士帽——命运，没有辜负那个敢闯的你。"},
+  heart:{icon:"♥",title:"同行者",sub:"情感最高",color:"var(--c-heart)",
+    text:"你牵起了重要之人的手。没有惊天动地，只有日复一日。后来你发现，最踏实的幸福，是你一路护着、也一直被你护着的人，都在。"},
+  study:{icon:"✎",title:"攀登者",sub:"学力最高",color:"var(--c-study)",
+    text:"你背着行囊走进更高学府的晨光。书山有路，你一步一步走得稳。后来你在论文扉页写下：谢谢那个在图书馆待到深夜的自己。"},
+  kind:{icon:"✺",title:"执灯人",sub:"善意最高",color:"var(--c-kind)",
+    text:"你把那年支教点的灯，一直点亮了下去。后来山里的孩子长成了青年，他们说，曾有个哥哥（姐姐），让他们相信了远方。"},
+  balance:{icon:"✦",title:"掌灯者",sub:"多维均衡 · 隐藏结局",color:"var(--gold)",
+    text:"你没有偏执于任何一条路，却把每条路上的朋友都留住了。多年后，许多人在岔路口停下时，会第一个拨通你的电话。你不是最亮的光，却是让人安心的那盏。"},
+};
+var FATE=[
+  {key:"courage",  name:"勇气",color:"var(--c-courage)"},
+  {key:"heart",  name:"情感",color:"var(--c-heart)"},
+  {key:"study",  name:"学力",color:"var(--c-study)"},
+  {key:"kind",   name:"善意",color:"var(--c-kind)"}
+];
+var FATE_CN={courage:"勇气",heart:"情感",study:"学力",kind:"善意"};
+
+/* ============ 状态 ============ */
+var S={idx:0, fate:{courage:0,heart:0,study:0,kind:0}, mem:{}, history:[]};
+var view=document.getElementById("view");
+var topbar=document.getElementById("topbar");
+var fill=document.getElementById("fill");
+var chapno=document.getElementById("chapno");
+var chaptotal=document.getElementById("chaptotal");
+
+/* ============ 首页 ============ */
+function renderHome(){
+  topbar.classList.add("hidden");
+  var h='<div class="home">'+
+    '<div class="seal">大 一 至 大 四 · 命 运 之 旅</div>'+
+    '<h1>命运的<span class="gold">岔路口</span></h1>'+
+    '<div class="rule"></div>'+
+    '<div class="sub" style="font-size:13px;color:var(--ink-faint);margin-top:18px;">每一个选择，都会累积你的四维命运——<br>勇气 · 情感 · 学力 · 善意。</div>'+
+    '<div style="margin-top:34px;"><button class="btn btn-gold" onclick="startGame()">翻开命运之书</button></div>'+
+  '</div>';
+  view.innerHTML=h;
+}
+
+/* ============ 章节视图 ============ */
+function renderScene(){
+  topbar.classList.remove("hidden");
+  var base=SCENES[S.idx];
+  var scene=(typeof base.branch==='function')?base.branch(S.mem):base;
+  var options=scene.options||base.options;
+  fill.style.width=((S.idx+1)/(SCENES.length+1)*100)+"%";
+  chapno.textContent="第"+CN(S.idx+1)+"章";
+  chaptotal.textContent="共"+(SCENES.length+1)+"章";
+
+  var opts="";
+  for(var i=0;i<options.length;i++){
+    var o=options[i];
+    opts+='<button class="opt" onclick="choose('+i+')">'+
+      '<span class="lab">'+o.label+'</span>'+
+      '<span class="sub">'+o.sub+'</span>'+
+    '</button>';
+  }
+  var h=
+    '<div class="scene">'+
+      '<div class="chapter">第'+CN(S.idx+1)+'章 · 第'+S.idx+'个路口</div>'+
+      '<h2>'+(scene.title||base.title)+'</h2>'+
+      '<div class="escort">'+(scene.escort||base.escort||'')+'</div>'+
+      '<div class="story"><p>'+(scene.text||base.text||'')+'</p></div>'+
+      '<div class="options">'+opts+'</div>'+
+      navFootHTML()+
+    '</div>';
+  view.innerHTML=h;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function meterHTML(){
+  var r="";
+  for(var i=0;i<FATE.length;i++){
+    var f=FATE[i];
+    var v=S.fate[f.key]||0;
+    r+='<div class="met-row">'+
+      '<div class="met-name">'+f.name+'</div>'+
+      '<div class="met-bar"><div class="met-fill" id="fill-'+f.key+'" style="width:'+(v*16)+'%;background:'+f.color+';"></div></div>'+
+      '<div class="met-num" id="num-'+f.key+'">'+v+'</div>'+
+    '</div>';
+  }
+  return r;
+}
+
+function navFootHTML(){
+  var back=(S.idx>0)?'<button class="btn btn-ghost" onclick="backStep()">← 回到上一章重选</button>':'';
+  var home='<button class="btn btn-ghost" onclick="toHome()">重新开始</button>';
+  return '<div class="navfoot">'+back+home+'</div>';
+}
+
+var CNW=["一","二","三","四","五","六","七","八","九","十","十一","十二","十三"];
+function CN(n){return CNW[n-1]||n;}
+
+/* ============ 选择 ============ */
+function choose(i){
+  var base=SCENES[S.idx];
+  var scene=(typeof base.branch==='function')?base.branch(S.mem):base;
+  var o=(scene.options||base.options)[i];
+
+  // 加命运值
+  var gains=[];
+  for(var k in o.fate){
+    S.fate[k]+=o.fate[k];
+    gains.push(FATE_CN[k]+"+"+o.fate[k]);
+  }
+  var memBefore=JSON.parse(JSON.stringify(S.mem));
+  if(o.set){ for(var k in o.set){ S.mem[k]=o.set[k]; } }
+  S.history.push({idx:S.idx, chose:i, memBefore:memBefore});
+
+  // 刷新仪表
+  updateMeter();
+
+  // 渲染反馈
+  var h=
+    '<div class="scene">'+
+      '<div class="chapter">命运的旁白</div>'+
+      '<h2>'+(scene.title||base.title)+'</h2>'+
+      '<div class="fatebox">'+
+        '<div class="eyebrow">◆ 你选择 · '+o.label+'</div>'+
+        '<div class="line">'+o.line+'</div>'+
+        '<div style="margin-top:20px;"><button class="btn btn-gold" onclick="nextStep()">继续命运的旅程 →</button></div>'+
+      '</div>'+
+    '</div>';
+  view.innerHTML=h;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function updateMeter(){
+  for(var i=0;i<FATE.length;i++){
+    var f=FATE[i],el=document.getElementById("fill-"+f.key),nm=document.getElementById("num-"+f.key);
+    if(el){el.style.width=(S.fate[f.key]*16)+"%";}
+    if(nm){nm.textContent=S.fate[f.key];}
+  }
+}
+
+/* ============ 下一步 / 回退 ============ */
+function nextStep(){
+  if(S.idx+1 < SCENES.length){
+    S.idx++;
+    renderScene();
+  }else{
+    renderResult();
+  }
+}
+
+function backStep(){
+  if(S.idx<=0)return;
+  var last=S.history.pop();
+  if(last){
+    var base=SCENES[last.idx];
+    var scene=(typeof base.branch==='function')?base.branch(last.memBefore):base;
+    var o=(scene.options||base.options)[last.chose];
+    S.mem=JSON.parse(JSON.stringify(last.memBefore));
+    for(var k in o.fate){S.fate[k]-=o.fate[k];}
+  }
+  S.idx--;
+  renderScene();
+  updateMeter();
+}
+
+function toHome(){reset();renderHome();}
+function startGame(){reset();S.idx=0;renderScene();}
+function reset(){S.idx=0;S.fate={courage:0,heart:0,study:0,kind:0};S.mem={};S.history=[];}
+
+/* ============ 结局判定 ============ */
+function judge(){
+  var c=S.fate.courage,h=S.fate.heart,st=S.fate.study,k=S.fate.kind;
+  var max=Math.max(c,h,st,k);
+  var top=[];
+  if(c===max)top.push("courage");
+  if(h===max)top.push("heart");
+  if(st===max)top.push("study");
+  if(k===max)top.push("kind");
+  if(top.length>=2)return "balance";
+  return top[0];
+}
+
+/* ============ 结果页 ============ */
+function renderResult(){
+  topbar.classList.remove("hidden");
+  fill.style.width="100%";
+  chapno.textContent="终章";
+  chaptotal.textContent="命运已定";
+  var key=judge();
+  var e=ENDINGS[key];
+  var endText=e.text;
+  if(key==='heart'){ endText = (S.mem.love?
+    "你牵起了那个人的手。没有惊天动地，只有日复一日。后来你发现，最踏实的幸福，是你一路护着、也一直被你护着的那个人，一直都在。" :
+    "你挽住了挚友与家人的手。没有惊天动地，只有日复一日。后来你发现，最踏实的幸福，是那些你一路护着、也一路护着你的人，都还在。"); }
+  if(key==='kind'){ endText = (S.mem.volunteer?
+    "你回了那年支教点的灯前，把那盏灯一直点亮了下去。后来山里的孩子长成了青年，他们说，曾有个哥哥（姐姐），让他们相信了远方。" :
+    "你从一次次微小的帮助开始，把那点善意一点点传开。后来许多人记得你，不是因为你的成就，而是因为你愿意停下来、伸出手。"); }
+
+  var h=
+    '<div class="result">'+
+      '<div class="badge">你的命运图谱</div>'+
+      '<div class="icon" style="color:'+e.color+';">'+e.icon+'</div>'+
+      '<h2>'+e.title+'</h2>'+
+      '<div class="subnote">'+e.sub+'</div>'+
+      '<div class="endline">'+endText+'</div>'+
+      '<div class="res-grid">'+
+        '<div class="res-card">'+
+          '<div class="rt">四维命运雷达</div>'+
+          '<canvas id="radar" width="300" height="300"></canvas>'+
+        '</div>'+
+        '<div class="res-card">'+
+          '<div class="rt">四维命运值</div>'+
+          '<div style="margin-top:6px;">'+meterHTML()+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="res-btns">'+
+        '<button class="btn btn-gold" onclick="toHome()">再来一次，重写命运</button>'+
+        '<button class="btn btn-ghost" onclick="backStep()">← 回到上一章改一个选择</button>'+
+      '</div>'+
+    '</div>';
+  view.innerHTML=h;
+  drawRadar(key);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ============ 雷达图 ============ */
+function drawRadar(key){
+  var c=document.getElementById("radar");
+  if(!c)return;
+  var ctx=c.getContext("2d");
+  var W=c.width,H=c.height,cx=W/2,cy=H/2,R=Math.min(W,H)/2-34;
+  var dims=[["勇气",S.fate.courage,"#f0a35e"],["情感",S.fate.heart,"#e08a9d"],["学力",S.fate.study,"#7fb3e8"],["善意",S.fate.kind,"#8fd0a6"]];
+  var n=dims.length,maxVal=Math.max(4, Math.max(S.fate.courage,S.fate.heart,S.fate.study,S.fate.kind),1);
+  ctx.clearRect(0,0,W,H);
+
+  function pt(i,r,off){
+    var a=-Math.PI/2 + i*2*Math.PI/n + (off||0);
+    return [cx+Math.cos(a)*r, cy+Math.sin(a)*r];
+  }
+
+  // 网格
+  ctx.strokeStyle="rgba(236,229,212,0.12)";
+  ctx.fillStyle="rgba(236,229,212,0.5)";
+  ctx.lineWidth=1;
+  for(var ring=1;ring<=4;ring++){
+    var rr=R*ring/4;
+    ctx.beginPath();
+    for(var i=0;i<n;i++){
+      var p=pt(i,rr);
+      if(i===0)ctx.moveTo(p[0],p[1]);else ctx.lineTo(p[0],p[1]);
+    }
+    ctx.closePath();ctx.stroke();
+  }
+  // 轴线
+  ctx.strokeStyle="rgba(236,229,212,0.14)";
+  for(var i=0;i<n;i++){
+    var p=pt(i,R);
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(p[0],p[1]);ctx.stroke();
+  }
+  // 数据面
+  ctx.beginPath();
+  for(var i=0;i<n;i++){
+    var v=dims[i][1]/maxVal;
+    var p=pt(i,R*v);
+    if(i===0)ctx.moveTo(p[0],p[1]);else ctx.lineTo(p[0],p[1]);
+  }
+  ctx.closePath();
+  ctx.fillStyle="rgba(217,164,65,0.20)";
+  ctx.fill();
+  ctx.strokeStyle="#d9a441";
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  // 顶点
+  for(var i=0;i<n;i++){
+    var v=dims[i][1]/maxVal;
+    var p=pt(i,R*v);
+    ctx.beginPath();ctx.arc(p[0],p[1],4,0,Math.PI*2);
+    ctx.fillStyle=dims[i][2];ctx.fill();
+  }
+  // 标签
+  ctx.font="500 14px 'PingFang SC','Microsoft YaHei',sans-serif";
+  ctx.textAlign="center";ctx.textBaseline="middle";
+  for(var i=0;i<n;i++){
+    var p=pt(i,R+22);
+    ctx.fillStyle=dims[i][2];
+    ctx.fillText(dims[i][0],p[0],p[1]);
+  }
+}
+
+/* ============ 启动 ============ */
+renderHome();
+</script>
+</body>
+</html>
